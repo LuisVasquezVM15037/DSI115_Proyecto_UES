@@ -1,0 +1,408 @@
+<!-- Código pantalla crear usuario, solo es la muy pantalla, no tienen niguna acción-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear Usuario — DentalCare</title>
+<!-- Fuentes-->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Iconos Lucide -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:       #1A7A6E;
+    --teal-light: #E8F5F3;
+    --teal-mid:   #2A9D8F;
+    --slate:      #2C3E50;
+    --muted:      #6B7A8D;
+    --border:     #D8E4E2;
+    --bg:         #F4F8F7;
+    --white:      #FFFFFF;
+    --error:      #C0392B;
+    --success:    #27AE60;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--slate);
+  }
+
+  /* ── PARA SIDEBAR ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+   width: 260px;
+    background: var(--slate);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 0;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    padding: 0 24px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .sidebar-logo span {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--white);
+    display: block;
+  }
+
+  .sidebar-logo small {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .nav { margin-top: 20px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 24px;
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); }
+
+  .nav-item.active {
+    color: var(--white);
+    background: rgba(26,122,110,0.25);
+    border-left-color: var(--teal-mid);
+  }
+
+  .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+  /* ── FUCNOON MAIN ── */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .breadcrumb {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .breadcrumb strong { color: var(--slate); font-weight: 500; }
+
+  .user-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+     
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+  }
+
+  .page-header {
+    padding: 48px 80px 24px; /* OJO: AUMENTAR ESTE PARA ALEJAELO DEL PANEL LATERAL  */
+    max-width: 1200px;
+  }
+
+  .page-header h1 {
+   font-size: 32px; 
+    font-weight: 700;
+    color: var(--slate);
+    margin-bottom: 8px;
+    letter-spacing: -1px;
+  }
+
+  .page-header p {
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+ /* ── FORM DE TARJETA ── */
+  .card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-body {
+    padding: 20px 80px 60px;
+    max-width: 1200px; 
+    width: 100%;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title i { color: var(--teal); }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label { font-size: 14px; font-weight: 600; color: var(--slate); }
+  label .req { color: var(--teal); }
+
+  input {
+    font-family: inherit;
+    font-size: 15px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: #F1F5F9;
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: var(--teal);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(26, 122, 110, 0.1);
+  }
+
+  /* ── ROLE SELECTOR ── */
+  .role-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .role-card {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 16px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .role-card i { color: var(--muted); }
+
+  .role-card:hover {
+    border-color: var(--teal-mid);
+    background: var(--teal-light);
+    transform: translateY(-2px);
+  }
+
+  .role-card.selected {
+    border-color: var(--teal);
+    background: var(--teal-light);
+    box-shadow: 0 4px 12px rgba(26, 122, 110, 0.15);
+  }
+
+  .role-card.selected i, .role-card.selected .role-name { color: var(--teal); }
+
+  .role-name { font-size: 13px; font-weight: 600; color: var(--slate); }
+
+  /* ── FOOTER ACTIONS ── */
+  .card-footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--white);
+    padding: 20px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+
+  .btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); color: var(--slate); }
+
+  .btn-primary { background: var(--teal); color: white; }
+  .btn-primary:hover { background: var(--teal-mid); transform: translateY(-1px); }
+
+  /* ── UTILS ── */
+  .error-msg { font-size: 12px; color: var(--error); display: none; margin-top: 4px; }
+  .has-error input { border-color: var(--error); }
+  .has-error .error-msg { display: block; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span>Clinica DentalCare</span>
+      <small>Sistema de Gestión</small>
+    </div>
+    <nav class="nav">
+      <div class="nav-item"><i data-lucide="layout-dashboard"></i> Inicio</div>
+      <div class="nav-item"><i data-lucide="calendar"></i> Citas</div>
+      <div class="nav-item"><i data-lucide="users"></i> Pacientes</div>
+      <div class="nav-item"><i data-lucide="folder-heart"></i> Expedientes</div>
+      <div class="nav-item"><i data-lucide="package"></i> Inventario</div>
+      <div class="nav-item active"><i data-lucide="settings"></i> Administración</div>
+      <div class="nav-item"><i data-lucide="bar-chart-3"></i> Reportes</div>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        Administración &rsaquo; Usuarios &rsaquo; <strong>  Crear nuevo usuario </strong>
+      </div>
+      <div class="user-badge">
+        <div class="avatar">AT</div>
+        Admin TI
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <div class="page-header">
+        <h1>Crear nuevo usuario</h1>
+        <p>Registra las credenciales y el nivel de acceso para un nuevo miembro del personal.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          
+          <div class="section-title">
+            <i data-lucide="user-circle"></i>
+            <h3>Información Personal</h3>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group" id="g-nombre">
+              <label>Nombre completo <span class="req">*</span></label>
+              <input type="text" id="nombre" placeholder="Ej. Jason Gerardo Castaneda Nuila ">
+              <span class="error-msg">Este campo es obligatorio</span>
+            </div>
+
+            <div class="form-group" id="g-correo">
+              <label>Correo electrónico <span class="req">*</span></label>
+              <input type="email" id="correo" placeholder="usuario@clinica.com">
+              <span class="error-msg">Ingrese un correo válido</span>
+            </div>
+
+            <div class="form-group full" id="g-pwd">
+              <label>Contraseña temporal <span class="req">*</span></label>
+              <input type="password" id="pwd" placeholder="Mínimo 8 caracteres">
+              <span style="font-size: 12px; color: var(--muted); margin-top: 4px;">El usuario deberá cambiar esta contraseña al iniciar sesión por primera vez.</span>
+            </div>
+          </div>
+
+          <div class="section-title">
+            <i data-lucide="shield-check"></i>
+            <h3>Asignación de Rol</h3>
+          </div>
+
+          <div class="role-grid">
+            <div class="role-card" onclick="selectRole(this, 'Recepcionista')">
+              <i data-lucide="clipboard-list" size="24"></i>
+              <span class="role-name">Recepcionista</span>
+            </div>
+            <div class="role-card" onclick="selectRole(this, 'Odontólogo')">
+              <i data-lucide="stethoscope" size="24"></i>
+              <span class="role-name">Odontólogo</span>
+            </div>
+            <div class="role-card" onclick="selectRole(this, 'Asistente')">
+              <i data-lucide="user-plus" size="24"></i>
+              <span class="role-name">Asistente Dental</span>
+            </div>
+            <div class="role-card" onclick="selectRole(this, 'Gerencia')">
+              <i data-lucide="line-chart" size="24"></i>
+              <span class="role-name">Gerencia</span>
+            </div>
+            <div class="role-card" onclick="selectRole(this, 'Admin TI')">
+              <i data-lucide="cpu" size="24"></i>
+              <span class="role-name">Administrador TI</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-ghost" onclick="window.history.back()">Cancelar</button>
+          <button class="btn btn-primary" onclick="submitForm()">Guardar Usuario</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Inicializar iconos
+  lucide.createIcons();
+
+  let selectedRole = null;
+
+  function selectRole(el, role) {
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedRole = role;
+  }
+
+  function submitForm() {
+    alert("Procesando creación de usuario para: " + document.getElementById('nombre').value);
+  }
+</script>
+</body>
+</html>
