@@ -30,4 +30,8 @@ public class DetallePrescripcion {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String indicacionesPrescripcion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_plan_tratamiento")
+    private PlanTratamiento planTratamiento;
 }

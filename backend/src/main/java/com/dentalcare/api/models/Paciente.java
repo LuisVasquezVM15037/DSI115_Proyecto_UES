@@ -28,4 +28,9 @@ public class Paciente {
 
     private String emailPaciente;
     private String contactoEmergencia;
+
+        // Alergias conocidas: medicamentos, anestesia, materiales dentales, etc.
+    // columnDefinition TEXT permite almacenar descripciones largas
+    @Column(columnDefinition = "TEXT")
+    private String alergias;
 }
