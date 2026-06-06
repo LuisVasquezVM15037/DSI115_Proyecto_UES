@@ -3,7 +3,7 @@ import { ESTADOS_CITA_OPCIONES } from '../constants/estados.constants';
 import Button from './ui/Button';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-//Tarjeta de cita con acciones de editar, cancelar y reprogramar. El botón de cancelar se muestra solo si el estado de la cita lo permite (no está cancelada, completada o finalizada). El botón de reprogramar se muestra solo si el padre pasa el prop `onReprogram`. En modo compacto, solo se muestran el nombre del paciente y el estado, junto con los botones de acción.
+//Tarjeta de cita con acciones de crear, editar, cancelar y reprogramar. El botón de cancelar se muestra solo si el estado de la cita lo permite (no está cancelada, completada o finalizada). El botón de reprogramar se muestra solo si el padre pasa el prop `onReprogram`. En modo compacto, solo se muestran el nombre del paciente y el estado, junto con los botones de acción.
 
 const Label = ({ children, required }) => (
   <label className="block text-xs font-medium text-slate-600 mb-1">

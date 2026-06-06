@@ -274,7 +274,7 @@ const AppointmentPage = () => {
                 return (
                   <div key={key} className="bg-white rounded-2xl border border-slate-200 shadow-card p-4">
                     <div className="mb-3 pb-2 border-b border-slate-100">
-                      <p className="text-xs font-bold text-primary-700 uppercase tracking-wide capitalize">
+                      <p className="text-xs font-bold text-primary-700 uppercase tracking-wide">
                         {day.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
                       </p>
                     </div>
