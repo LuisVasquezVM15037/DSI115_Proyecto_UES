@@ -5,24 +5,45 @@ import AppointmentForm from '../components/AppointmentForm';
 import ReprogramModal from '../components/ReprogramModal';
 import Button from '../components/ui/Button';
 import { LoadingSpinner, EmptyState } from '../components/ui/LoadingSpinner';
-import { formatFechaHeader, normalizarFecha, obtenerFechaLocalISO} from '../utils/cita.utils';
+import { formatFechaHeader, normalizarFecha, obtenerFechaLocalISO } from '../utils/cita.utils';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-const DAYS_AHEAD = 6; // días extra a mostrar en la vista semana
 
-/** Genera un array de Date desde hoy hasta hoy + DAYS_AHEAD */
-const getWeekDays = () =>
-  Array.from({ length: DAYS_AHEAD + 1 }, (_, i) => {
-    const d = new Date();
+// Configuración de cuántas semanas mostrar en la vista "Semana"
+
+const WEEKS_BEFORE = 1; // semanas a mostrar antes de la seleccionada
+const WEEKS_AFTER = 1;  // semanas a mostrar después de la seleccionada
+// Esto da un total de (1 + 1 + 1) * 7 = 21 días en la vista semanal, centrados en la fecha seleccionada.
+/** Devuelve el lunes de la semana que contiene la fecha dada */
+const getLunesDeSemana = (date) => {
+  const d = new Date(date);
+  const offset = (d.getDay() + 6) % 7; // lunes = 0
+  d.setDate(d.getDate() - offset);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+/**
+ * Genera los días de la vista "Semana", empezando en lunes y centrados
+ * en la fecha seleccionada (incluye WEEKS_BEFORE semanas antes y
+ * WEEKS_AFTER después).
+ */
+const getWeekDays = (anchorDate) => {
+  const inicio = getLunesDeSemana(anchorDate);
+  inicio.setDate(inicio.getDate() - WEEKS_BEFORE * 7);
+  const total = (WEEKS_BEFORE + 1 + WEEKS_AFTER) * 7;
+  return Array.from({ length: total }, (_, i) => {
+    const d = new Date(inicio);
     d.setDate(d.getDate() + i);
     return d;
   });
+};
 
 /** Construye las celdas del mes (lunes primero); null = relleno antes del día 1 */
 const buildCalendar = (viewDate) => {
-  const year = viewDate.getFullYear();
-  const month = viewDate.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const year = viewDate.getFullYear(); // El mes se obtiene dentro de la función para recalcular cada vez que cambie viewDate
+  const month = viewDate.getMonth(); // El mes se obtiene dentro de la función para recalcular cada vez que cambie viewDate
+  const daysInMonth = new Date(year, month + 1, 0).getDate(); // Días en el mes (calculado dinámicamente)
   const startOffset = (new Date(year, month, 1).getDay() + 6) % 7; // lunes = 0
   return [
     ...Array.from({ length: startOffset }, () => null),
@@ -30,38 +51,42 @@ const buildCalendar = (viewDate) => {
   ];
 };
 
+// Etiquetas de días para el calendario (lunes a domingo)
 const WEEKDAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
 /**
  * Página de agenda de citas.
  * Lógica en useAgenda; vista en Tailwind.
  */
+// TODO: agregar vista mensual (con menos detalle) y permitir arrastrar citas para reprogramar
 const AppointmentPage = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showForm, setShowForm] = useState(false);
-  const [reprogramCita, setReprogramCita] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date()); // fecha seleccionada para mostrar en el calendario y resumen
+  const [showForm, setShowForm] = useState(false); // controla si se muestra el formulario de nueva/editar cita
+  const [reprogramCita, setReprogramCita] = useState(null); // cita que se está reprogramando (para pasar al modal)
   const [activeTab, setActiveTab] = useState('dia'); // 'dia' | 'semana'
   const [viewDate, setViewDate] = useState(new Date()); // mes mostrado en el calendario
 
+  /// Hooks de datos y lógica
   const agenda = useAgenda(selectedDate);
-  const weekDays = getWeekDays();
-
+  // Generamos los días a mostrar en la vista semanal cada vez que cambia la fecha seleccionada
+  const weekDays = getWeekDays(selectedDate);
+// Generamos las celdas del calendario cada vez que cambia el mes mostrado
   const calendarCells = buildCalendar(viewDate);
+  // Función para cambiar el mes mostrado en el calendario
   const cambiarMes = (delta) =>
     setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
-
+// Funciones para manejar acciones de editar y crear citas
   const handleEditar = (cita) => {
     agenda.prepararEditarCita(cita);
     setShowForm(true);
   };
-
+  // Función para manejar la creación de una nueva cita
   const handleNueva = () => {
     agenda.prepararNuevaCita();
     setShowForm(true);
   };
-
+  // Función para manejar el éxito del formulario (tanto creación como edición)
   const handleFormSuccess = () => setShowForm(false);
-
   return (
     <div className="flex h-full p-5 gap-5 bg-surface overflow-hidden">
 

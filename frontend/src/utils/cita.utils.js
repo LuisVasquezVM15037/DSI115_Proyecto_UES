@@ -34,6 +34,44 @@ export const normalizarFecha = (fecha) => {
   return fechaString.includes('T') ? fechaString.split('T')[0] : fechaString;
 };
 
+// ── Generación de slots y validación de solapamientos de citas al momento de crearlas────────────────
+
+export const HORA_APERTURA = '08:00';   // ajusta al horario de tu clínica
+export const HORA_CIERRE = '18:00';
+export const SLOT_MINUTOS = 30;         // pon 60 si quieres solo en punto
+export const DURACION_CITA_MIN = 60;     // la cita dura 1 hora -> fin automático
+
+//── Formateo de fechas y horas para UI ─────────────────────────────────────────
+const aMinutos = (hhmm) => {
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+};
+const aHHMM = (min) =>
+  `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`;
+
+/** Suma minutos a una hora "HH:mm" y devuelve "HH:mm" */
+export const sumarMinutos = (hhmm, mins) => aHHMM(aMinutos(hhmm) + mins);
+
+/**
+ * Genera los slots de inicio en múltiplos de SLOT_MINUTOS.
+ * Marca como no disponible el slot cuya cita (de DURACION_CITA_MIN)
+ * se solape con una ya existente.
+ *
+ * @param {string[]} ocupadas  horas de inicio ya programadas ("HH:mm")
+ */
+export const generarSlots = (ocupadas = []) => {
+  const cierre = aMinutos(HORA_CIERRE);
+  const ocupadasMin = ocupadas.map(aMinutos);
+  const slots = [];
+// Recorremos desde la apertura hasta el cierre, generando slots cada SLOT_MINUTOS
+  for (let t = aMinutos(HORA_APERTURA); t + DURACION_CITA_MIN <= cierre; t += SLOT_MINUTOS) {
+    const finNueva = t + DURACION_CITA_MIN;
+    const seSolapa = ocupadasMin.some(o => t < o + DURACION_CITA_MIN && o < finNueva);
+    slots.push({ value: aHHMM(t), label: aHHMM(t), disponible: !seSolapa });
+  }
+  return slots;
+};
+
 //Para obtener la fecha y hora local UTC 6 
 export const obtenerFechaLocalISO = (fecha) => {
   const d = new Date(fecha);
