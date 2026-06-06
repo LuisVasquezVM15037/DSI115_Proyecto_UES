@@ -18,6 +18,20 @@ const getWeekDays = () =>
     return d;
   });
 
+/** Construye las celdas del mes (lunes primero); null = relleno antes del día 1 */
+const buildCalendar = (viewDate) => {
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const startOffset = (new Date(year, month, 1).getDay() + 6) % 7; // lunes = 0
+  return [
+    ...Array.from({ length: startOffset }, () => null),
+    ...Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1)),
+  ];
+};
+
+const WEEKDAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+
 /**
  * Página de agenda de citas.
  * Lógica en useAgenda; vista en Tailwind.
@@ -27,9 +41,14 @@ const AppointmentPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [reprogramCita, setReprogramCita] = useState(null);
   const [activeTab, setActiveTab] = useState('dia'); // 'dia' | 'semana'
+  const [viewDate, setViewDate] = useState(new Date()); // mes mostrado en el calendario
 
   const agenda = useAgenda(selectedDate);
   const weekDays = getWeekDays();
+
+  const calendarCells = buildCalendar(viewDate);
+  const cambiarMes = (delta) =>
+    setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
 
   const handleEditar = (cita) => {
     agenda.prepararEditarCita(cita);
@@ -49,58 +68,85 @@ const AppointmentPage = () => {
       {/* ── SIDEBAR IZQUIERDO: Calendario mini ─────────────────────────── */}
       <aside className="w-72 flex-shrink-0 flex flex-col gap-4">
 
-        {/* Encabezado */}
+        {/* Calendario del mes */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-card p-4">
+
+          {/* Navegación de mes */}
           <div className="flex items-center justify-between mb-3">
-            <h5 className="font-bold text-slate-800 text-sm">
-              {selectedDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
-            </h5>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleNueva}
-              icon={<i className="bi bi-plus-lg" />}
+            <button
+              type="button"
+              onClick={() => cambiarMes(-1)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+              aria-label="Mes anterior"
             >
-              Nueva cita
-            </Button>
+              <i className="bi bi-chevron-left" />
+            </button>
+            <h5 className="font-bold text-slate-800 text-sm capitalize">
+              {viewDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}
+            </h5>
+            <button
+              type="button"
+              onClick={() => cambiarMes(1)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+              aria-label="Mes siguiente"
+            >
+              <i className="bi bi-chevron-right" />
+            </button>
           </div>
 
-          {/* Días de la semana */}
-          <div className="space-y-1">
-            {weekDays.map(day => {
-              // 1. Usamos nuestra función segura en lugar de toISOString()
+          {/* Encabezado de días */}
+          <div className="grid grid-cols-7 gap-1 mb-1">
+            {WEEKDAY_LABELS.map((d, i) => (
+              <div key={i} className="text-center text-[10px] font-semibold text-slate-400 py-1">
+                {d}
+              </div>
+            ))}
+          </div>
+
+          {/* Cuadrícula de días */}
+          <div className="grid grid-cols-7 gap-1">
+            {calendarCells.map((day, idx) => {
+              if (!day) return <div key={`empty-${idx}`} />;
+
+              // Usamos la fecha local segura en lugar de toISOString()
               const key = obtenerFechaLocalISO(day);
               const isActive = normalizarFecha(selectedDate) === key;
-              const count = agenda.citasPorFecha[key]?.length ?? 0;
-
-              // 2. Comparamos contra la fecha actual local
               const isToday = key === obtenerFechaLocalISO(new Date());
+              const count = agenda.citasPorFecha[key]?.length ?? 0;
 
               return (
                 <button
                   key={key}
                   type="button"
                   onClick={() => setSelectedDate(new Date(day))}
-                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl
-                              text-sm transition-all duration-150 text-left
+                  className={`relative aspect-square flex items-center justify-center rounded-lg text-sm
+                              transition-all duration-150
                               ${isActive
-                      ? 'bg-primary-600 text-white shadow-sm shadow-primary-200'
-                      : 'hover:bg-slate-50 text-slate-700'}`}
+                      ? 'bg-primary-600 text-white font-bold shadow-sm shadow-primary-200'
+                      : isToday
+                        ? 'bg-primary-50 text-primary-700 font-semibold'
+                        : 'text-slate-700 hover:bg-slate-100'}`}
                 >
-                  <span className="font-medium capitalize">
-                    {day.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' })}
-                    {isToday && <span className="ml-1.5 text-[10px] font-bold opacity-80">(hoy)</span>}
-                  </span>
+                  {day.getDate()}
                   {count > 0 && (
-                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full
-                                      ${isActive ? 'bg-white/20 text-white' : 'bg-primary-100 text-primary-700'}`}>
-                      {count}
-                    </span>
+                    <span className={`absolute bottom-1 w-1.5 h-1.5 rounded-full
+                                      ${isActive ? 'bg-white' : 'bg-primary-500'}`} />
                   )}
                 </button>
               );
             })}
           </div>
+
+          {/* Acción */}
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleNueva}
+            icon={<i className="bi bi-plus-lg" />}
+            className="w-full mt-4"
+          >
+            Nueva cita
+          </Button>
         </div>
 
         {/* Resumen del día seleccionado */}
@@ -131,7 +177,7 @@ const AppointmentPage = () => {
         <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <div>
             <h4 className="font-bold text-slate-800 capitalize">
-              {formatFechaHeader(selectedDate.toISOString().split('T')[0])}
+              {formatFechaHeader(obtenerFechaLocalISO(selectedDate))}
             </h4>
             <p className="text-xs text-slate-400 mt-0.5">
               {agenda.citasDelDia.length} cita{agenda.citasDelDia.length !== 1 ? 's' : ''} programada{agenda.citasDelDia.length !== 1 ? 's' : ''}
@@ -198,7 +244,7 @@ const AppointmentPage = () => {
           {!agenda.loading && !showForm && activeTab === 'semana' && (
             <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
               {weekDays.map(day => {
-                const key = day.toISOString().split('T')[0];
+                const key = obtenerFechaLocalISO(day);
                 const citas = agenda.citasPorFecha[key] ?? [];
                 return (
                   <div key={key} className="bg-white rounded-2xl border border-slate-200 shadow-card p-4">
