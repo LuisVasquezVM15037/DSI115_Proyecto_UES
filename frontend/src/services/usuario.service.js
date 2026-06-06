@@ -4,6 +4,10 @@ export const getUsuarios   = ()         => apiFetch('/usuarios');
 export const getRoles      = ()         => apiFetch('/roles');
 export const getOdontologos= ()         => apiFetch('/odontologos');
 
+
+//LINEA AGREGADA PARA EL PBI DE REVISAR ACCESOS
+export const getRegistrosAcceso= ()     => apiFetch('/registros-acceso');
+
 export const createUsuario = (data)     => apiFetch('/usuarios', {
   method: 'POST', body: JSON.stringify(data),
 });

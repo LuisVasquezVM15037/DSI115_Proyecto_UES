@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { path: '/agenda',    icon: 'bi-calendar3',     label: 'Agenda'    },// La ruta '/agenda' muestra el calendario de citas y eventos relacionados con la gestión de la clínica.
   { path: '/consulta',  icon: 'bi-heart-pulse',   label: 'Consultas' }, // La ruta '/consulta' es donde se registran y gestionan las consultas médicas realizadas a los pacientes.
   { path: '/usuarios',  icon: 'bi-person-badge',  label: 'Personal'  },// La ruta '/usuarios' es la sección de administración de usuarios, donde se pueden gestionar los perfiles del personal que tiene acceso al sistema.
+  { path: '/revisar-accesos', icon: 'bi-shield-check', label: 'Revisar accesos' }, //******PBI REVISAR ACCESOS********
 ];
 
 // El componente Layout es el contenedor principal de la aplicación, que incluye la barra lateral de navegación, el encabezado y el área de contenido donde se renderizan las rutas hijas.
@@ -22,10 +23,18 @@ const Layout = () => {
   const location  = useLocation();// Hook de React Router para obtener información sobre la ruta actual, útil para determinar qué enlace de navegación está activo.
   const [menuOpen, setMenuOpen] = useState(false); // Estado local para controlar si el menú de usuario (dropdown) está abierto o cerrado.
   const menuRef   = useRef(null); // Referencia al contenedor del menú de usuario, utilizada para detectar clics fuera del menú y cerrarlo automáticamente.
+  
+// Memoizado: localStorage no cambia durante la sesión
+const userName = useMemo(() => getUserName(), []);
+const userRole = useMemo(() => getUserRole(), []);
 
-  // Memoizado: localStorage no cambia durante la sesión
-  const userName = useMemo(() => getUserName(), []); // Obtiene el nombre del usuario desde el servicio de autenticación, memoizado para evitar llamadas repetidas a localStorage.
-  const userRole = useMemo(() => getUserRole(), []); // Obtiene el rol del usuario desde el servicio de autenticación, también memoizado.
+// PBI REVISAR ACCESOS
+// Ocultar Revisar accesos si el usuario no es administrador
+const isAdmin = useMemo(() => {
+  const role = String(userRole).toLowerCase();
+
+  return role === 'administrador' || role === 'admin';
+}, [userRole]);
 
   // Las iniciales se generan tomando la primera letra de cada palabra en el nombre del usuario, convirtiéndolas a mayúsculas y limitando a las primeras dos letras. Esto se muestra en el avatar del menú de usuario.
   const initials = useMemo(() =>
@@ -73,7 +82,9 @@ const Layout = () => {
         {/* Nav */}
         <nav className="flex-1 flex flex-col items-center gap-1.5 py-3" aria-label="Navegación principal">
           {/* // Se itera sobre cada elemento de `NAV_ITEMS` para crear un botón de navegación en la barra lateral. Se determina si el enlace está activo comparando la ruta actual con la ruta del enlace. Si el enlace está activo, se aplican estilos diferentes para resaltarlo visualmente. */}
-          {NAV_ITEMS.map(({ path, icon, label }) => {
+          {NAV_ITEMS
+           .filter(item => item.path !== '/revisar-accesos' || isAdmin)  // PBI REVISAR ACCESOS 
+           .map(({ path, icon, label }) => {
             const isActive = location.pathname === path ||
               (path !== '/dashboard' && location.pathname.startsWith(path));
             return (

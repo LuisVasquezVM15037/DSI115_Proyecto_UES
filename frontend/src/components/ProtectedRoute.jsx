@@ -29,11 +29,13 @@ const isTokenValid = (token) => {
  * Guard de rutas privadas.
  * Si el token no existe o expiró, limpia el storage y redirige al login.
  */
-const ProtectedRoute = ({ children }) => {
+//const ProtectedRoute = ({ children }) => { // SE COMENTA PARA AGREGAR allowedRoles para pbi revisar accesos
+  const ProtectedRoute = ({ children, allowedRoles }) => {   //PBI REVISAR ACCESOS
   // Obtenemos el token del localStorage y verificamos su validez usando `isTokenValid`.
   const token         = localStorage.getItem('authToken');
   // Si el token no es válido (no existe o expiró), se limpia el localStorage para eliminar cualquier dato de sesión y se redirige al usuario a la página de inicio de sesión ("/") usando el componente `Navigate` de React Router.
   const authenticated = isTokenValid(token);
+  const userRole = localStorage.getItem('userRole'); // SE AGREGA ESTA LINEA PORQUE CORRESPONDE CON EL PBI REVISAR ACCESOS  PARA OBTENER EL ROL DEL USAURIO 
 
   // Si el usuario no está autenticado, se limpia el localStorage y se redirige al login.
   if (!authenticated) {
@@ -42,6 +44,10 @@ const ProtectedRoute = ({ children }) => {
     // Redirige al usuario a la página de inicio de sesión. El prop `replace` asegura que esta redirección reemplace la entrada actual en el historial del navegador, evitando que el usuario pueda volver a la ruta protegida usando el botón "Atrás".
     return <Navigate to="/" replace />;
   }
+   /// FRAGMENTO AGREGADO PARA PBI REVISAR ACCESOS: VERIFICA SI EL USUARIO TIENE LOS ROLES PERMITIDOS PARA ACCEDER A LA RUTA ACTUAL 
+  if (allowedRoles && !allowedRoles.includes(String(userRole).toLowerCase())) {
+  return <Navigate to="/dashboard" replace />;
+}
 
   return children;
 };

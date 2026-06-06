@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import LoadingScreen from './components/ui/LoadingScreen';
+import AccessReviewPage from "./views/AccessReviewPage"; // Relacionado al 
+//PBI REVISAR ACCESSOS
 
 /**
  * Lazy imports — cada módulo genera su propio chunk en el build.
@@ -47,6 +49,15 @@ export default function App() {
             <Route path="/usuarios"           element={<UserManagementPage />} />
             <Route path="/consulta"           element={<ConsultaIndexPage />} />
             <Route path="/consulta/:citaId"   element={<ActiveConsultationPage />} />
+            {/* PBI: Revisar accesos */}
+            <Route
+              path="/revisar-accesos"
+              element={
+                <ProtectedRoute allowedRoles={["admin", "administrador"]}>
+                  <AccessReviewPage />
+                </ProtectedRoute>
+             }
+          />
 
             {/* Catch-all dentro del layout */}
             <Route path="*" element={<NotFound />} />
