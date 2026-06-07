@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { normalizeRole } from '../constants/roles.constants';
 
 /*
  * Decodifica el payload del token JWT y verifica que no haya expirado.
@@ -35,7 +36,7 @@ const isTokenValid = (token) => {
   const token         = localStorage.getItem('authToken');
   // Si el token no es válido (no existe o expiró), se limpia el localStorage para eliminar cualquier dato de sesión y se redirige al usuario a la página de inicio de sesión ("/") usando el componente `Navigate` de React Router.
   const authenticated = isTokenValid(token);
-  const userRole = localStorage.getItem('userRole'); // SE AGREGA ESTA LINEA PORQUE CORRESPONDE CON EL PBI REVISAR ACCESOS  PARA OBTENER EL ROL DEL USAURIO 
+  const userRole = normalizeRole(localStorage.getItem('userRole'));// Normaliza el rol del usuario para comparaciones consistentes con allowedRoles
 
   // Si el usuario no está autenticado, se limpia el localStorage y se redirige al login.
   if (!authenticated) {

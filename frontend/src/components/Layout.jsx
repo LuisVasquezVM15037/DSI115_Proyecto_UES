@@ -3,18 +3,52 @@ import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { getUserName, getUserRole, clearSession } from '../services/auth.service';
 import { confirmDialog } from '../utils/alert.utils';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import { ROLES, normalizeRole } from '../constants/roles.constants';
 
 //Este es el componente de Layout principal que envuelve toda la aplicación. Contiene la estructura de la interfaz, incluyendo la barra lateral de navegación, el encabezado y el área de contenido donde se renderizan las rutas hijas mediante <Outlet />. También maneja la lógica del menú de usuario y el cierre de sesión.
 
 // Configuración de rutas para la barra lateral, cada una con su ícono y etiqueta.
 const NAV_ITEMS = [
-  // Cada objeto representa un enlace en la barra lateral con su ruta, ícono de Bootstrap Icons y etiqueta visible.
-  { path: '/dashboard', icon: 'bi-house-door',   label: 'Inicio'    }, // La ruta '/dashboard' es la página principal o de inicio del sistema.
-  { path: '/pacientes', icon: 'bi-people',        label: 'Pacientes' }, // La ruta '/pacientes' lleva a la sección donde se gestionan los pacientes registrados en el sistema.
-  { path: '/agenda',    icon: 'bi-calendar3',     label: 'Agenda'    },// La ruta '/agenda' muestra el calendario de citas y eventos relacionados con la gestión de la clínica.
-  { path: '/consulta',  icon: 'bi-heart-pulse',   label: 'Consultas' }, // La ruta '/consulta' es donde se registran y gestionan las consultas médicas realizadas a los pacientes.
-  { path: '/usuarios',  icon: 'bi-person-badge',  label: 'Personal'  },// La ruta '/usuarios' es la sección de administración de usuarios, donde se pueden gestionar los perfiles del personal que tiene acceso al sistema.
-  { path: '/revisar-accesos', icon: 'bi-shield-check', label: 'Revisar accesos' }, //******PBI REVISAR ACCESOS********
+  {
+    // Para que todos los roles puedan ver el dashboard
+    path:  '/dashboard',
+    icon:  'bi-house',
+    label: 'Inicio',
+  },
+  {
+    // Para que todos los roles puedan ver la agenda
+    path:  '/agenda',
+    icon:  'bi-calendar3',
+    label: 'Agenda',    
+  },
+  {
+     // Para que solo el admin y la recepcionista puedan ver los pacientes
+    path:         '/pacientes',
+    icon:         'bi-people',
+    label:        'Pacientes',
+    allowedRoles: [ROLES.ADMIN, ROLES.RECEPCIONISTA],
+  },
+  {
+     // Para que solo el admin y odontologo puedan ver las consultas
+    path:         '/consulta',
+    icon:         'bi-heart-pulse',
+    label:        'Consultas',
+    allowedRoles: [ROLES.ADMIN, ROLES.ODONTOLOGO],
+  },
+  {
+     // Para que solo el admin pueda ver los usuarios
+    path:         '/usuarios',
+    icon:         'bi-person-badge',
+    label:        'Usuarios',
+    allowedRoles: [ROLES.ADMIN],
+  },
+  {
+     // Para que solo el admin pueda ver la revision de los accesos
+    path:         '/revisar-accesos',
+    icon:         'bi-shield-check',
+    label:        'Revisar Accesos',
+    allowedRoles: [ROLES.ADMIN],
+  },
 ];
 
 // El componente Layout es el contenedor principal de la aplicación, que incluye la barra lateral de navegación, el encabezado y el área de contenido donde se renderizan las rutas hijas.
@@ -23,19 +57,15 @@ const Layout = () => {
   const location  = useLocation();// Hook de React Router para obtener información sobre la ruta actual, útil para determinar qué enlace de navegación está activo.
   const [menuOpen, setMenuOpen] = useState(false); // Estado local para controlar si el menú de usuario (dropdown) está abierto o cerrado.
   const menuRef   = useRef(null); // Referencia al contenedor del menú de usuario, utilizada para detectar clics fuera del menú y cerrarlo automáticamente.
-  
+
 // Memoizado: localStorage no cambia durante la sesión
 const userName = useMemo(() => getUserName(), []);
-const userRole = useMemo(() => getUserRole(), []);
+// Normaliza el rol obtenido del storage para comparaciones consistentes en el filtro de la sidebar del layout
+const userRole = useMemo(() => normalizeRole(getUserRole()), []);
+
+
 
 // PBI REVISAR ACCESOS
-// Ocultar Revisar accesos si el usuario no es administrador
-const isAdmin = useMemo(() => {
-  const role = String(userRole).toLowerCase();
-
-  return role === 'administrador' || role === 'admin';
-}, [userRole]);
-
   // Las iniciales se generan tomando la primera letra de cada palabra en el nombre del usuario, convirtiéndolas a mayúsculas y limitando a las primeras dos letras. Esto se muestra en el avatar del menú de usuario.
   const initials = useMemo(() =>
     userName.split(' ').map(w => w[0]?.toUpperCase() ?? '').slice(0, 2).join(''),
@@ -81,10 +111,12 @@ const isAdmin = useMemo(() => {
 
         {/* Nav */}
         <nav className="flex-1 flex flex-col items-center gap-1.5 py-3" aria-label="Navegación principal">
-          {/* // Se itera sobre cada elemento de `NAV_ITEMS` para crear un botón de navegación en la barra lateral. Se determina si el enlace está activo comparando la ruta actual con la ruta del enlace. Si el enlace está activo, se aplican estilos diferentes para resaltarlo visualmente. */}
+          {/* Se itera sobre cada elemento de `NAV_ITEMS`, filtrando según el rol del usuario, para crear un botón de navegación en la barra lateral. Se determina si el enlace está activo comparando la ruta actual con la ruta del enlace. Si el enlace está activo, se aplican estilos diferentes para resaltarlo visualmente. */}
           {NAV_ITEMS
-           .filter(item => item.path !== '/revisar-accesos' || isAdmin)  // PBI REVISAR ACCESOS 
-           .map(({ path, icon, label }) => {
+            .filter(({ allowedRoles }) =>
+             !allowedRoles || allowedRoles.includes(userRole)
+              )
+             .map(({ path, icon, label }) => {
             const isActive = location.pathname === path ||
               (path !== '/dashboard' && location.pathname.startsWith(path));
             return (

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import LoadingScreen from './components/ui/LoadingScreen';
+import { ROLES } from './constants/roles.constants';
 import AccessReviewPage from "./views/AccessReviewPage"; // Relacionado al 
 //PBI REVISAR ACCESSOS
 
@@ -53,11 +54,29 @@ export default function App() {
             <Route
               path="/revisar-accesos"
               element={
-                <ProtectedRoute allowedRoles={["admin", "administrador"]}>
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
                   <AccessReviewPage />
                 </ProtectedRoute>
              }
           />
+          {/* Ruta protegida para gestión de usuarios: solo accesible por administradores */}
+            <Route
+            path="/usuarios"
+            element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+                  <UserManagementPage />
+                </ProtectedRoute>
+              }
+           />
+           {/* Ruta protegida para gestión de pacientes: accesible por administradores y recepcionistas */}
+            <Route
+              path="/pacientes"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.RECEPCIONISTA]}>
+                  <PatientManagementPage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Catch-all dentro del layout */}
             <Route path="*" element={<NotFound />} />
