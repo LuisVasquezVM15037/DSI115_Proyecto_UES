@@ -27,6 +27,11 @@ const NotFound = () => (
   </div>
 );
 
+// Componente auxiliar para no estar repitiendo el wrapper ProtectedRoute
+const RoleRoute = ({ roles, children }) => (
+  <ProtectedRoute allowedRoles={roles}>{children}</ProtectedRoute>
+);
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -43,38 +48,57 @@ export default function App() {
               </ProtectedRoute>
             }
           >
-            {/* FIX BUG-08: unificado a /dashboard (antes era /iniciodashboard) */}
-            <Route path="/dashboard"          element={<DashboardPage />} />
-            <Route path="/agenda"             element={<AppointmentPage />} />
-            <Route path="/pacientes"          element={<PatientManagementPage />} />
-            <Route path="/usuarios"           element={<UserManagementPage />} />
-            <Route path="/consulta"           element={<ConsultaIndexPage />} />
-            <Route path="/consulta/:citaId"   element={<ActiveConsultationPage />} />
-            {/* PBI: Revisar accesos */}
-            <Route
-              path="/revisar-accesos"
-              element={
-                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-                  <AccessReviewPage />
-                </ProtectedRoute>
-             }
-          />
-          {/* Ruta protegida para gestión de usuarios: solo accesible por administradores */}
-            <Route
-            path="/usuarios"
-            element={
-                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
-                  <UserManagementPage />
-                </ProtectedRoute>
-              }
-           />
-           {/* Ruta protegida para gestión de pacientes: accesible por administradores y recepcionistas */}
+            {/* Todos los roles autenticados */}
+            <Route path="/dashboard" element={<DashboardPage />} />
+
+            {/* Agenda: todos los roles */}
+            <Route path="/agenda" element={<AppointmentPage />} />
+
+            {/* Pacientes: admin + recepcionista */}
             <Route
               path="/pacientes"
               element={
-                <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.RECEPCIONISTA]}>
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.RECEPCIONISTA]}>
                   <PatientManagementPage />
-                </ProtectedRoute>
+                </RoleRoute>
+              }
+            />
+
+            {/* Consultas: admin + odontólogo */}
+            <Route
+              path="/consulta"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.ODONTOLOGO]}>
+                  <ConsultaIndexPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/consulta/:citaId"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.ODONTOLOGO]}>
+                  <ActiveConsultationPage />
+                </RoleRoute>
+              }
+            />
+
+            {/* Usuarios: solo admin */}
+            <Route
+              path="/usuarios"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN]}>
+                  <UserManagementPage />
+                </RoleRoute>
+              }
+            />
+
+            {/* Revisar accesos: solo admin */}
+            <Route
+              path="/revisar-accesos"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN]}>
+                  <AccessReviewPage />
+                </RoleRoute>
               }
             />
 
