@@ -19,7 +19,7 @@ export const ESTADOS_CITA_OPCIONES = [
   { value: 'PROGRAMADA',   label: 'Programada'   },
   { value: 'PENDIENTE',    label: 'Pendiente'    },
   { value: 'EN_PROGRESO',  label: 'En Progreso'  },
-  { value: 'COMPLETADA',   label: 'Completada'   },
+  { value: 'FINALIZADA',   label: 'Finalizada'   },
   { value: 'REPROGRAMADA', label: 'Reprogramada' },
   { value: 'NO_ASISTIO',   label: 'No Asistió'   },
   { value: 'CANCELADA',    label: 'Cancelada'    },
