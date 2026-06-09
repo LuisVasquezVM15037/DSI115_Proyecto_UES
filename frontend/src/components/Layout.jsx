@@ -16,10 +16,11 @@ const NAV_ITEMS = [
     label: 'Inicio',
   },
   {
-    // Para que todos los roles puedan ver la agenda
+    // Para que solo el admin y la recepcionista puedan ver la agenda
     path:  '/agenda',
     icon:  'bi-calendar3',
     label: 'Agenda',    
+    allowedRoles: [ROLES.ADMIN, ROLES.RECEPCIONISTA],
   },
   {
      // Para que solo el admin y la recepcionista puedan ver los pacientes
