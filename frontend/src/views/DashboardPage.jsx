@@ -58,7 +58,7 @@ const DashboardPage = () => {
         <QuickAction icon="bi-person-plus"  title="Registrar Paciente"  desc="Crear nuevo expediente clínico"   colorClass="bg-primary-600"  onClick={() => navigate('/pacientes')} />
         <QuickAction icon="bi-calendar-event" title="Agenda de Citas"   desc="Ver programaciones de hoy"        colorClass="bg-dental-600"   onClick={() => navigate('/agenda')} />
         <QuickAction icon="bi-heart-pulse"  title="Iniciar Consulta"    desc="Ver citas del día y atender"      colorClass="bg-violet-600"   onClick={() => navigate('/consulta')} />
-        <QuickAction icon="bi-tooth"        title="Dental Dashboard"    desc="Odontograma interactivo"          colorClass="bg-slate-700"    onClick={() => navigate('/odontograma')} />
+        <QuickAction icon="bi-book"        title="Panel de Administración"    desc="Reportes, Inventarios ..." colorClass="bg-slate-700"    onClick={() => navigate('/Administracion')} />
       </div>
 
       {/* Widgets */}

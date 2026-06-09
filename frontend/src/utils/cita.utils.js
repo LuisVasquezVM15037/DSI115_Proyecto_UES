@@ -1,6 +1,5 @@
 /**
  * Utilidades de fecha/hora y estado de citas.
- * Fuente única de verdad — importar desde aquí, NO desde hooks.
  */
 
 // ── Normalización de fechas ───────────────────────────────────────────────────
