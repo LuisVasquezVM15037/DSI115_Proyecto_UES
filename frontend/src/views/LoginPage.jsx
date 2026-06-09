@@ -84,7 +84,13 @@ const LoginPage = () => {
             <span className="text-2xl font-black text-primary-700">DentalCare.</span>
           </div>
 
-          <div className="text-center mb-8">
+          <div className="text-center mb-8">  
+            <img
+            src="/img/dentalcare.png"
+            alt="DentalCare Clínica Odontológica"
+            className="w-52 mx-auto mb-4"         // Se agrega estas lineas de código para agregar el logo de la clinica
+            style = {{mixBlendMode: 'multiply'}}
+             />
             <h2 className="text-2xl font-bold text-slate-800">Bienvenido de nuevo</h2>
             <p className="text-slate-500 text-sm mt-1">Ingresa tus credenciales para acceder al panel.</p>
           </div>
