@@ -7,6 +7,7 @@ import Button from '../components/ui/Button';
 import { LoadingSpinner, EmptyState } from '../components/ui/LoadingSpinner';
 import { formatFechaHeader, normalizarFecha, obtenerFechaLocalISO } from '../utils/cita.utils';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import SearchInput from '../components/ui/SearchInput';
 
 
 // Configuración de cuántas semanas mostrar en la vista "Semana"
@@ -65,9 +66,18 @@ const AppointmentPage = () => {
   const [reprogramCita, setReprogramCita] = useState(null); // cita que se está reprogramando (para pasar al modal)
   const [activeTab, setActiveTab] = useState('dia'); // 'dia' | 'semana'
   const [viewDate, setViewDate] = useState(new Date()); // mes mostrado en el calendario
+  const [searchTerm, setSearchTerm] = useState('');
 
   /// Hooks de datos y lógica
   const agenda = useAgenda(selectedDate);
+  // Filtra pacientes cuyo nombre o DUI coincida con el término buscado
+  const pacientesFiltrados = searchTerm.trim().length > 1
+    ? agenda.pacientes.filter(p =>
+        `${p.nombrePaciente} ${p.apellidoPaciente}`.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+       p.numeroIdentidadPaciente?.includes(searchTerm)
+     )
+    : [];
   // Generamos los días a mostrar en la vista semanal cada vez que cambia la fecha seleccionada
   const weekDays = getWeekDays(selectedDate);
 // Generamos las celdas del calendario cada vez que cambia el mes mostrado
@@ -199,7 +209,7 @@ const AppointmentPage = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header del área */}
-        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+        <div className="flex items-center justify-between mb-4 flex-shrink-0 gap-4">
           <div>
             <h4 className="font-bold text-slate-800 capitalize">
               {formatFechaHeader(obtenerFechaLocalISO(selectedDate))}
@@ -208,6 +218,63 @@ const AppointmentPage = () => {
               {agenda.citasDelDia.length} cita{agenda.citasDelDia.length !== 1 ? 's' : ''} programada{agenda.citasDelDia.length !== 1 ? 's' : ''}
             </p>
           </div>
+            
+        {/* Buscador de paciente */}
+        <div className="relative w-72 flex-shrink-0">
+          <SearchInput
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            onClear={() => setSearchTerm('')}
+            placeholder="Buscar paciente en agenda..."
+          />
+          {pacientesFiltrados.length > 0 && (
+            <div className="absolute top-[calc(100%+4px)] left-0 right-0 z-40 bg-white
+                            border border-slate-200 rounded-xl shadow-xl overflow-hidden">
+              {pacientesFiltrados.map(p => {
+                // Busca citas de este paciente y navega al día con más citas recientes
+                const citasPaciente = agenda.appointments.filter(
+                  c => c.idPaciente === p.idPaciente
+                );
+                const proxima = citasPaciente
+                  .sort((a, b) => new Date(a.fechaCita) - new Date(b.fechaCita))
+                  .find(c => normalizarFecha(c.fechaCita) >= obtenerFechaLocalISO(new Date()));
+
+                return (
+                  <button
+                    key={p.idPaciente}
+                    type="button"
+                    onClick={() => {
+                      if (proxima) {
+                        const fecha = normalizarFecha(proxima.fechaCita);
+                        const [y, m, d] = fecha.split('-').map(Number);
+                        setSelectedDate(new Date(y, m - 1, d));
+                        setViewDate(new Date(y, m - 1, d));
+                      }
+                      setSearchTerm('');
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-primary-50
+                              transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 text-xs
+                                    font-bold flex items-center justify-center flex-shrink-0">
+                      {p.nombrePaciente?.[0]}{p.apellidoPaciente?.[0]}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">
+                        {p.nombrePaciente} {p.apellidoPaciente}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {proxima
+                          ? `Próxima cita: ${normalizarFecha(proxima.fechaCita)}`
+                          : 'Sin citas próximas'}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
           {/* Tabs de vista */}
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
