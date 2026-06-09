@@ -80,7 +80,7 @@ export default function App() {
 
             {/* Catch-all dentro del layout */}
             <Route path="*" element={<NotFound />} />
-          </Route>
+          </Route>  
         </Routes>
       </Suspense>
     </BrowserRouter>

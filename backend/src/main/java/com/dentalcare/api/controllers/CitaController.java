@@ -23,8 +23,7 @@ import com.dentalcare.api.services.CitaService;
 // La anotación @RequestMapping define la ruta base para todas las solicitudes a
 // este controlador, en este caso "/api/citas".
 @RequestMapping("/api/citas")
-@CrossOrigin(origins = "http://localhost:5173") // Permitir solicitudes desde el backend en vite (que corre en otro
-                                                // puerto)
+@CrossOrigin(origins = "http://localhost:5173") // Permitir solicitudes desde el backend en vite (que corre en otro puerto)
 public class CitaController {
     // Inyectamos el servicio de Citas para delegar la lógica de negocio a la capa
     // de servicios, manteniendo el controlador enfocado en manejar las solicitudes

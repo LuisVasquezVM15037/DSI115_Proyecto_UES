@@ -167,7 +167,7 @@ const userRole = useMemo(() => normalizeRole(getUserRole()), []);
             <span className="font-bold text-primary-700 tracking-tight">DentalCare</span>
             <span className="text-slate-300 text-sm font-normal">ERP</span>
           </div>
-{/* // El área del encabezado a la derecha contiene un botón de notificaciones (con un ícono de campana) y un menú de usuario representado por un avatar con las iniciales del usuario. Al hacer clic en el avatar, se despliega un menú con opciones relacionadas con la cuenta del usuario, incluyendo la opción de cerrar sesión. */}
+            {/* // El área del encabezado a la derecha contiene un botón de notificaciones (ícono de campana) y un menú de usuario representado por un avatar con las iniciales del usuario. Al hacer clic en el avatar, se despliega un menú con opciones relacionadas con la cuenta del usuario, incluyendo la opción de cerrar sesión. */}
           <div className="flex items-center gap-2">
             {/* Campana */}
             {/* // El botón de notificaciones, que actualmente no tiene funcionalidad asignada pero está preparado para futuras implementaciones. Tiene estilos que cambian al pasar el mouse para indicar que es interactivo. */}

@@ -16,30 +16,29 @@ export const normalizarFecha = (fecha) => {
     return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
   }
 
-  // 3. ¡NUEVO! Si la fecha es un objeto Date de JavaScript
+  // 3. Si la fecha es un objeto Date de JavaScript
   if (fecha instanceof Date) {
     // toISOString() lo convierte a formato 'YYYY-MM-DDTHH:mm:ss.sssZ'
     return fecha.toISOString().split('T')[0];
   }
 
-  // 4. ¡NUEVO! Si la fecha es un número (timestamp en milisegundos)
+  // 4. Si la fecha es un número (timestamp en milisegundos)
   if (typeof fecha === 'number') {
     return new Date(fecha).toISOString().split('T')[0];
   }
 
-  // 5. Si no fue nada de lo anterior, forzamos a que sea un String por seguridad
+  // 5. Si no fue nada de lo anterior, se fuerza a que sea un String por seguridad
   const fechaString = String(fecha);
 
-  // Ahora sí es 100% seguro usar .includes()
   return fechaString.includes('T') ? fechaString.split('T')[0] : fechaString;
 };
 
 // ── Generación de slots y validación de solapamientos de citas al momento de crearlas────────────────
 
-export const HORA_APERTURA = '08:00';   // ajusta al horario de tu clínica
+export const HORA_APERTURA = '08:00';   // ajustar al horario de la clínica
 export const HORA_CIERRE = '18:00';
-export const SLOT_MINUTOS = 30;         // pon 60 si quieres solo en punto
-export const DURACION_CITA_MIN = 60;     // la cita dura 1 hora -> fin automático
+export const SLOT_MINUTOS = 30;         
+export const DURACION_CITA_MIN = 60;     // la cita dura 1 hora
 
 //── Formateo de fechas y horas para UI ─────────────────────────────────────────
 const aMinutos = (hhmm) => {
@@ -63,7 +62,7 @@ export const generarSlots = (ocupadas = []) => {
   const cierre = aMinutos(HORA_CIERRE);
   const ocupadasMin = ocupadas.map(aMinutos);
   const slots = [];
-// Recorremos desde la apertura hasta el cierre, generando slots cada SLOT_MINUTOS
+// Se recorre desde la apertura hasta el cierre, generando slots cada SLOT_MINUTOS
   for (let t = aMinutos(HORA_APERTURA); t + DURACION_CITA_MIN <= cierre; t += SLOT_MINUTOS) {
     const finNueva = t + DURACION_CITA_MIN;
     const seSolapa = ocupadasMin.some(o => t < o + DURACION_CITA_MIN && o < finNueva);
@@ -72,16 +71,16 @@ export const generarSlots = (ocupadas = []) => {
   return slots;
 };
 
-//Para obtener la fecha y hora local UTC 6 
+//Para obtener la fecha y hora local en UTC 6 
 export const obtenerFechaLocalISO = (fecha) => {
   const d = new Date(fecha);
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`; // Siempre devuelve YYYY-MM-DD en hora local
+  return `${year}-${month}-${day}`; // Devuelve YYYY-MM-DD en hora local
 };
 
-/** Convierte array [y,m,d,h,min] o string ISO → Date */
+/** Convierte array [y,m,d,h,min] o string ISO a Date */
 export const toDate = (dt) => {
   if (!dt) return null;
   if (Array.isArray(dt)) {
@@ -90,7 +89,7 @@ export const toDate = (dt) => {
   return new Date(dt);
 };
 
-/** Formatea a 'HH:MM AM/PM' en locale es-SV */
+/** Formatea a 'HH:MM AM/PM' en hora local */
 export const formatHora = (hora) => {
   const d = toDate(hora);
   return d
@@ -116,7 +115,7 @@ export const formatDT = (dt) => {
   return dt.substring(0, 16);
 };
 
-/** Retorna 'yyyy-MM-dd' del día de hoy en hora local (no UTC) */
+/** Retorna 'yyyy-MM-dd' del día de hoy en hora local (esto no UTC) */
 export const getHoyLocal = () => {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -135,8 +134,8 @@ export const normalizarFechaNacimiento = (fechaNac) => {
 // ── Mapeo de estado → UI ──────────────────────────────────────────────────────
 
 /**
- * Mapa completo de estado → { tw: clases Tailwind, label: texto legible }
- * Esta es la ÚNICA definición en todo el proyecto.
+ * Mapa completo de estado { tw: clases Tailwind, label: texto legible }
+ * Esta es la úncia definición
  */
 export const ESTADO_CONFIG = {
   PROGRAMADA: { tw: 'bg-amber-50   text-amber-700   ring-1 ring-amber-200', label: 'Programada' },
@@ -154,7 +153,7 @@ export const ESTADO_CONFIG = {
 export const getEstadoConfig = (estado) =>
   ESTADO_CONFIG[estado] ?? { tw: 'bg-slate-100 text-slate-500', label: estado ?? '—' };
 
-// ── Mapeo de estado hallazgo → Tailwind ───────────────────────────────────────
+// ── Mapeo de estado hallazgo  a Tailwind ───────────────────────────────────────
 export const HALLAZGO_ESTADO_CONFIG = {
   PENDIENTE: { tw: 'bg-amber-50   text-amber-700', label: 'Pendiente' },
   PROGRAMADO: { tw: 'bg-sky-50     text-sky-700', label: 'Programado' },

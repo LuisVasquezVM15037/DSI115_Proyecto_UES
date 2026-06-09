@@ -87,7 +87,7 @@ export const useAgenda = (date) => {
     [appointments],
   );
 
-  // ── Preparar formulario ────────────────────────────────────────────────────
+  // ── Preparacion de formulario ────────────────────────────────────────────────────
   const prepararNuevaCita = () => {
     setIsEditing(false);
     setSelectedCita(null);
