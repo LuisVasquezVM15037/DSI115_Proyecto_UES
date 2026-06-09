@@ -102,6 +102,14 @@ export default function App() {
               }
             />
 
+            <Route
+              path="/agenda"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.RECEPCIONISTA]}>
+                  <AppointmentPage />
+                </ProtectedRoute>
+              }
+            />
             {/* Catch-all dentro del layout */}
             <Route path="*" element={<NotFound />} />
           </Route>  
