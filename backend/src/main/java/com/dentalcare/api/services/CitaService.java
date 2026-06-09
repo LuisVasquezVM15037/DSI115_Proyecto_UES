@@ -16,10 +16,16 @@ import com.dentalcare.api.repositories.CitaRepository;
 import com.dentalcare.api.repositories.OdontologoRepository;
 import com.dentalcare.api.repositories.PacienteRepository;
 
+//Con la anotación Service, esta clase se marca como un componente de servicio en el contexto de Spring,
+//lo que permite que Spring gestione su ciclo de vida y la inyección de dependencias.
+
+// La clase CitaService es responsable de contener la lógica de negocio relacionada con las citas,
+// como crear, obtener, actualizar y cancelar citas, así como mapear entre las entidades de
+//la base de datos y los DTOs que se utilizan para la comunicación con el frontend.
 @Service
 public class CitaService {
 
-    // Inyectamos los repositorios necesarios para acceder a la base de datos
+    //Con la anotacion Autowired, Spring Inyecta los repositorios necesarios para acceder a la base de datos
     @Autowired
     private CitaRepository citaRepository;
 
