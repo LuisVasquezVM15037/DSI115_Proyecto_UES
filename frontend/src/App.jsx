@@ -89,14 +89,14 @@ export default function App() {
             {/* Dashboard — cualquier rol autenticado */}
             <Route path="/dashboard" element={<DashboardPage />} />
 
-            {/* Agenda — actualmente abierta a cualquier rol autenticado. */}
+            {/* Agenda: todos los roles */}
             <Route path="/agenda" element={<AppointmentPage />} />
 
-            {/* Pacientes — admin + recepcionista */}
+            {/* Pacientes: admin + secretaria */}
             <Route
               path="/pacientes"
               element={
-                <RoleRoute roles={[ROLES.ADMIN, ROLES.RECEPCIONISTA]}>
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.SECRETARIA]}>
                   <PatientManagementPage />
                 </RoleRoute>
               }
@@ -143,6 +143,7 @@ export default function App() {
             />
 
             {/* Catch-all dentro del layout: cualquier ruta no definida → 404 */}
+
             <Route path="*" element={<NotFound />} />
           </Route>
 

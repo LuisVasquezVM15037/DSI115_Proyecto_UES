@@ -5,7 +5,7 @@
 export const ROLES = {
   ADMIN:          'admin',
   ODONTOLOGO:     'odontologo',
-  RECEPCIONISTA:  'recepcionista',
+  SECRETARIA:  'secretaria',
 };
 
 /** Helper: normaliza el rol a minúsculas para comparaciones de ser necesario*/
