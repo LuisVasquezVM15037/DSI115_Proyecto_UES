@@ -143,12 +143,12 @@ const AppointmentPage = () => {
             {calendarCells.map((day, idx) => {
               if (!day) return <div key={`empty-${idx}`} />;
 
-              // Usamos la fecha local segura en lugar de toISOString()
+              //Obtenemos la clave de fecha para este día y verificamos si es el día seleccionado o el día actual, y cuántas citas hay en ese día para mostrar el indicador.
               const key = obtenerFechaLocalISO(day);
               const isActive = normalizarFecha(selectedDate) === key;
               const isToday = key === obtenerFechaLocalISO(new Date());
               const count = agenda.citasPorFecha[key]?.length ?? 0;
-
+              // Renderizamos el botón del día con estilos condicionales según si es el día seleccionado, el día actual, y mostrando un indicador si hay citas programadas para ese día.
               return (
                 <button
                   key={key}
@@ -250,8 +250,10 @@ const AppointmentPage = () => {
                         setSelectedDate(new Date(y, m - 1, d));
                         setViewDate(new Date(y, m - 1, d));
                       }
+                      // Al hacer clic en un paciente, navegamos a la fecha de su próxima cita (si tiene), y limpiamos el término de búsqueda para cerrar el dropdown.
                       setSearchTerm('');
                     }}
+                    // Mostramos el nombre del paciente, su número de identidad, y la fecha de su próxima cita (si tiene) para ayudar a identificarlo en la búsqueda.
                     className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-primary-50
                               transition-colors text-left"
                   >
@@ -263,6 +265,7 @@ const AppointmentPage = () => {
                       <p className="text-sm font-semibold text-slate-800">
                         {p.nombrePaciente} {p.apellidoPaciente}
                       </p>
+                      
                       <p className="text-xs text-slate-400">
                         {proxima
                           ? `Próxima cita: ${normalizarFecha(proxima.fechaCita)}`
@@ -311,7 +314,7 @@ const AppointmentPage = () => {
               onCancelar={() => setShowForm(false)}
             />
           )}
-
+          {/* Si no estamos cargando, no se muestra el formulario, y estamos en la vista de día, mostramos las citas del día o un estado vacío si no hay y ademas un boton de crear citas*/}
           {!agenda.loading && !showForm && activeTab === 'dia' && (
             agenda.citasDelDia.length === 0
               ? <EmptyState

@@ -23,5 +23,6 @@ public class CitaResponseDTO {
     private String numeroIdentidadPaciente; //concatenación de nombre y apellido
     
     private Integer idOdontologo;
+    private String nombreCompletoOdontologo;
     private String especialidadOdontologo;  
 }
