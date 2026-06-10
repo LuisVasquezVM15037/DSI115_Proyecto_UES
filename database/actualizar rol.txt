@@ -1,0 +1,41 @@
+USE BD_DentalCareWeb;
+
+ALTER TABLE rol
+MODIFY nombre_rol ENUM(
+  'ADMIN',
+  'ASISTENTEODONTOLOGO',
+  'GERENTE',
+  'ODONTOLOGO',
+  'OTRO',
+  'PACIENTE',
+  'PROVEEDOR',
+  'RECEPCIONISTA',
+  'SECRETARIA'
+) NOT NULL;
+
+SELECT id_rol, nombre_rol
+FROM rol;
+
+UPDATE rol
+SET nombre_rol = 'SECRETARIA'
+WHERE id_rol = 3;
+
+ALTER TABLE rol
+MODIFY nombre_rol ENUM(
+  'ADMIN',
+  'ASISTENTEODONTOLOGO',
+  'GERENTE',
+  'ODONTOLOGO',
+  'OTRO',
+  'PACIENTE',
+  'PROVEEDOR',
+  'SECRETARIA'
+) NOT NULL;
+
+SELECT id_usuario, username_usuario, email_usuario
+FROM usuario;
+
+UPDATE usuario
+SET username_usuario = 'secretaria1',
+    email_usuario = 'secretaria@dentalcare.com'
+WHERE id_usuario = 3;
