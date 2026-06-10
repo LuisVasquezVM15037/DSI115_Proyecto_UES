@@ -54,11 +54,11 @@ export default function App() {
             {/* Agenda: todos los roles */}
             <Route path="/agenda" element={<AppointmentPage />} />
 
-            {/* Pacientes: admin + recepcionista */}
+            {/* Pacientes: admin + secretaria */}
             <Route
               path="/pacientes"
               element={
-                <RoleRoute roles={[ROLES.ADMIN, ROLES.RECEPCIONISTA]}>
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.SECRETARIA]}>
                   <PatientManagementPage />
                 </RoleRoute>
               }
@@ -105,7 +105,7 @@ export default function App() {
             <Route
               path="/agenda"
               element={
-                <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.RECEPCIONISTA]}>
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.SECRETARIA]}>
                   <AppointmentPage />
                 </ProtectedRoute>
               }

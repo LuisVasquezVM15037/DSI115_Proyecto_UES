@@ -16,6 +16,6 @@ public class LoginResponseDto {
 
     private String nombreCompleto;
 
-    // Nombre del rol (ej. "ADMIN", "DOCTOR", "RECEPCIONISTA")
+    // Nombre del rol (ej. "ADMIN", "DOCTOR", "SECRETARIA")
     private String rol;
 }

@@ -2,7 +2,7 @@ package com.dentalcare.api.models.enums;
 
 public enum NombreRol {
     ADMIN,
-    RECEPCIONISTA,
+    SECRETARIA,
     ODONTOLOGO,
     ASISTENTEODONTOLOGO,
     GERENTE,
